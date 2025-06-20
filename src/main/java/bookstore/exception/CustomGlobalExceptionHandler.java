@@ -43,7 +43,7 @@ public class CustomGlobalExceptionHandler {
         body.put("timestamp", LocalDateTime.now());
         body.put("error", "RegistrationException");
         body.put("message", ex.getMessage());
-        return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
     private String getErrorMessage(ObjectError e) {

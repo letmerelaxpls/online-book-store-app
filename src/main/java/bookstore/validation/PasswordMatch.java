@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = PasswordMatchValidator.class)
 @Target(ElementType.TYPE)
 public @interface PasswordMatch {
-    String message() default "Паролі не співпадають";
+    String message() default "Passwords don`t match";
 
     Class<?>[] groups() default {};
 
