@@ -4,7 +4,7 @@ import static bookstore.repository.book.spec.AuthorSpecificationProvider.AUTHOR_
 import static bookstore.repository.book.spec.IsbnSpecificationProvider.ISBN_KEY;
 import static bookstore.repository.book.spec.TitleSpecificationProvider.TITLE_KEY;
 
-import bookstore.dto.BookSearchParametersDto;
+import bookstore.dto.book.BookSearchParametersDto;
 import bookstore.model.Book;
 import bookstore.repository.SpecificationBuilder;
 import bookstore.repository.SpecificationProviderManager;
