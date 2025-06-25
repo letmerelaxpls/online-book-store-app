@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: 05-assign-admin-role-to-admin-user
+      author: letmerelax
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: email
+                  value: user@gmail.com
+              - column:
+                  name: password
+                  value: $2a$10$Xqh22ceri6kKUtA/.37UCOok7PNyAuo9/r1ToPKSgETN/Ghb0XSnW
+              - column:
+                  name: first_name
+                  value: us
+              - column:
+                  name: last_name
+                  value: er
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 4
+              - column:
+                  name: email
+                  value: admin@gmail.com
+              - column:
+                  name: password
+                  value: $2a$10$mXr8hx1Pzm6ka3TS6FHaT.xz1EggpucD.kPo4SWTM1iybFCt./z8S
+              - column:
+                  name: first_name
+                  value: ad
+              - column:
+                  name: last_name
+                  value: min
+
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 3
+              - column:
+                  name: role_id
+                  valueNumeric: 2
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 4
+              - column:
+                  name: role_id
+                  valueNumeric: 1
