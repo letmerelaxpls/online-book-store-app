@@ -4,6 +4,7 @@ import bookstore.dto.user.UserRegistrationRequestDto;
 import bookstore.dto.user.UserResponseDto;
 import bookstore.exception.RegistrationException;
 import bookstore.mapper.UserMapper;
+import bookstore.model.Role;
 import bookstore.model.User;
 import bookstore.model.enums.RoleName;
 import bookstore.repository.role.RoleRepository;
@@ -31,10 +32,10 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Set.of(
-                roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(()
-                        -> new RegistrationException("Role " + RoleName.ROLE_USER
-                        + " not found"))));
+        Role role = roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(()
+                -> new RegistrationException("Role " + RoleName.ROLE_USER
+                + " not found"));
+        user.setRoles(Set.of(role));
         return userMapper.toDto(userRepository.save(user));
     }
 }
