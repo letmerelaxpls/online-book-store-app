@@ -13,6 +13,7 @@ public class CreateBookRequestDto {
     private String title;
     @NotBlank
     private String author;
+    @NotBlank
     @Pattern(regexp = "^\\d{13}$")
     private String isbn;
     @NotNull

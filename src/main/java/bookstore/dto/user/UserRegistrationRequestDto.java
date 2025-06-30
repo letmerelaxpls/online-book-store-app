@@ -9,10 +9,10 @@ import lombok.Data;
 @PasswordMatch
 public class UserRegistrationRequestDto {
     @NotBlank
-    private String password;
-    @NotBlank
     @Email
     private String email;
+    @NotBlank
+    private String password;
     @NotBlank
     private String repeatPassword;
     @NotBlank
