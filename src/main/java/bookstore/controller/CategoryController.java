@@ -59,7 +59,8 @@ public class CategoryController {
             description = "Endpoint to create a new category")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public CategoryResponseDto createCategory(@RequestBody @Valid CategoryRequestDto categoryRequestDto) {
+    public CategoryResponseDto createCategory(
+            @RequestBody @Valid CategoryRequestDto categoryRequestDto) {
         return categoryService.save(categoryRequestDto);
     }
 
@@ -67,8 +68,9 @@ public class CategoryController {
             description = "Endpoint to update specific category`s parameters by id")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public CategoryResponseDto updateCategory(@PathVariable Long id,
-                                              @RequestBody @Valid CategoryRequestDto categoryRequestDto) {
+    public CategoryResponseDto updateCategory(
+            @PathVariable Long id,
+            @RequestBody @Valid CategoryRequestDto categoryRequestDto) {
         return categoryService.update(id, categoryRequestDto);
     }
 
