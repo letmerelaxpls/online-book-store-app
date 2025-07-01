@@ -1,0 +1,131 @@
+databaseChangeLog:
+  - changeSet:
+      id: 09-insert-books-to-books-table
+      author: letmerelax
+      changes:
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: title
+                  value: American Psycho
+              - column:
+                  name: author
+                  value: Bret Easton Ellis
+              - column:
+                  name: isbn
+                  value: "9780307756435"
+              - column:
+                  name: price
+                  value: 99.99
+              - column:
+                  name: description
+                  value: |
+                    Patrick Bateman moves among the young and trendy in 1980s Manhattan. 
+                    Young, handsome, and well educated, Bateman earns his fortune on Wall Street 
+                    by day while spending his nights in ways we cannot begin to fathom.
+              - column:
+                  name: cover_image
+                  value: "https://example.com/american-psycho-cover-image.jpg"
+              - column:
+                  name: is_deleted
+                  valueNumeric: 0
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: title
+                  value: It
+              - column:
+                  name: author
+                  value: Stephen King
+              - column:
+                  name: isbn
+                  value: "9780450411434"
+              - column:
+                  name: price
+                  value: 12.99
+              - column:
+                  name: description
+                  value: |
+                    It’s a small city, a place as hauntingly familiar as your own hometown. 
+                    Only in Derry the haunting is real ...
+              - column:
+                  name: cover_image
+                  value: "https://example.com/it-cover-image.jpg"
+              - column:
+                  name: is_deleted
+                  valueNumeric: 0
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: title
+                  value: The Devils
+              - column:
+                  name: author
+                  value: Joe Abercrombie
+              - column:
+                  name: isbn
+                  value: "9781250880055"
+              - column:
+                  name: price
+                  value: 15.99
+              - column:
+                  name: description
+                  value: |
+                    Holy work sometimes requires unholy deeds.
+                    Brother Diaz has been summoned to the Sacred City, 
+                    where he is certain a commendation and grand holy assignment awaits him.
+              - column:
+                  name: cover_image
+                  value: "https://example.com/the-devils-cover-image.jpg"
+              - column:
+                  name: is_deleted
+                  valueNumeric: 0
+
+        - insert:
+            tableName: books_categories
+            columns:
+              - column:
+                  name: book_id
+                  valueNumeric: 1
+              - column:
+                  name: category_id
+                  valueNumeric: 2
+        - insert:
+            tableName: books_categories
+            columns:
+              - column:
+                  name: book_id
+                  valueNumeric: 1
+              - column:
+                  name: category_id
+                  valueNumeric: 3
+        - insert:
+            tableName: books_categories
+            columns:
+              - column:
+                  name: book_id
+                  valueNumeric: 2
+              - column:
+                  name: category_id
+                  valueNumeric: 2
+        - insert:
+            tableName: books_categories
+            columns:
+              - column:
+                  name: book_id
+                  valueNumeric: 3
+              - column:
+                  name: category_id
+                  valueNumeric: 1

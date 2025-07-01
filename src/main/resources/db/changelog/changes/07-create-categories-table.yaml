@@ -1,0 +1,66 @@
+databaseChangeLog:
+  - changeSet:
+      id: 07-create-categories-table
+      author: letmerelax
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+              - column:
+                  name: is_deleted
+                  type: bit
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: Fantasy
+              - column:
+                  name: description
+                  value: Fantasy books
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: Horror
+              - column:
+                  name: description
+                  value: Horror books
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 3
+              - column:
+                  name: name
+                  value: Mystery
+              - column:
+                  name: description
+                  value: Mystery books
