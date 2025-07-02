@@ -11,3 +11,9 @@ databaseChangeLog:
       file: db/changelog/changes/05-insert-admin-and-user-to-users-table.yaml
   - include:
       file: db/changelog/changes/06-add-is_deleted-column-to-users.yaml
+  - include:
+      file: db/changelog/changes/07-create-categories-table.yaml
+  - include:
+      file: db/changelog/changes/08-create-books_categories-table.yaml
+  - include:
+      file: db/changelog/changes/09-insert-books-in-books-table.yaml
