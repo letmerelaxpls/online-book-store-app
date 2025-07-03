@@ -1,8 +1,7 @@
 package bookstore.controller;
 
 import bookstore.dto.cartitem.CartItemRequestDto;
-import bookstore.dto.cartitem.CartItemRequestWithoutBookIdDto;
-import bookstore.dto.cartitem.CartItemResponseDto;
+import bookstore.dto.cartitem.UpdateCartItemDto;
 import bookstore.dto.shoppingcart.ShoppingCartResponseDto;
 import bookstore.service.shoppingcart.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,40 +34,41 @@ public class ShoppingCartController {
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ShoppingCartResponseDto getCart(Authentication authentication) {
-        String email = (String) authentication.getPrincipal();
-        return shoppingCartService.getCart(email);
+        Long userId = (Long) authentication.getPrincipal();
+        return shoppingCartService.getCart(userId);
     }
 
     @Operation(summary = "Add cart item",
             description = "Endpoint for adding cart items in user`s shopping cart")
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public void addItem(Authentication authentication,
+    public ShoppingCartResponseDto addItem(Authentication authentication,
                         @RequestBody @Valid CartItemRequestDto requestItem) {
-        String email = (String) authentication.getPrincipal();
-        shoppingCartService.addItem(email, requestItem);
+        Long userId = (Long) authentication.getPrincipal();
+        return shoppingCartService.addItem(userId, requestItem);
     }
 
     @Operation(summary = "Update cart item quantity",
             description = "Endpoint for updating cart item`s quantity")
     @PutMapping("/items/{cartItemId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
-    public CartItemResponseDto updateItem(
+    public ShoppingCartResponseDto updateItem(
             Authentication authentication,
             @PathVariable Long cartItemId,
-            @RequestBody @Valid CartItemRequestWithoutBookIdDto requestItem) {
-        String email = (String) authentication.getPrincipal();
-        return shoppingCartService.updateItem(email, cartItemId, requestItem);
+            @RequestBody @Valid UpdateCartItemDto requestItem) {
+        Long userId = (Long) authentication.getPrincipal();
+        return shoppingCartService.updateItem(userId, cartItemId, requestItem);
     }
 
     @Operation(summary = "Delete item from shopping cart",
             description = "Endpoint for deleting cart item from user`s shopping cart")
     @DeleteMapping("/items/{cartItemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public void deleteItem(Authentication authentication,
                            @PathVariable Long cartItemId) {
-        String email = (String) authentication.getPrincipal();
-        shoppingCartService.deleteItem(email, cartItemId);
+        Long userId = (Long) authentication.getPrincipal();
+        shoppingCartService.deleteItem(userId, cartItemId);
     }
 }

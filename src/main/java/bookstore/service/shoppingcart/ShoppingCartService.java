@@ -1,18 +1,20 @@
 package bookstore.service.shoppingcart;
 
 import bookstore.dto.cartitem.CartItemRequestDto;
-import bookstore.dto.cartitem.CartItemRequestWithoutBookIdDto;
-import bookstore.dto.cartitem.CartItemResponseDto;
+import bookstore.dto.cartitem.UpdateCartItemDto;
 import bookstore.dto.shoppingcart.ShoppingCartResponseDto;
+import bookstore.model.User;
 
 public interface ShoppingCartService {
-    ShoppingCartResponseDto getCart(String email);
+    ShoppingCartResponseDto getCart(Long id);
 
-    void addItem(String email, CartItemRequestDto itemRequest);
+    ShoppingCartResponseDto addItem(Long id, CartItemRequestDto itemRequest);
 
-    CartItemResponseDto updateItem(String email,
+    ShoppingCartResponseDto updateItem(Long userId,
                                    Long itemId,
-                                   CartItemRequestWithoutBookIdDto itemRequest);
+                                   UpdateCartItemDto itemRequest);
 
-    void deleteItem(String email, Long itemId);
+    void deleteItem(Long userId, Long itemId);
+
+    void createShoppingCart(User user);
 }

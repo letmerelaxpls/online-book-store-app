@@ -2,8 +2,8 @@ package bookstore.mapper;
 
 import bookstore.config.MapperConfig;
 import bookstore.dto.cartitem.CartItemRequestDto;
-import bookstore.dto.cartitem.CartItemRequestWithoutBookIdDto;
 import bookstore.dto.cartitem.CartItemResponseDto;
+import bookstore.dto.cartitem.UpdateCartItemDto;
 import bookstore.model.Book;
 import bookstore.model.CartItem;
 import org.mapstruct.Mapper;
@@ -22,7 +22,7 @@ public interface CartItemMapper {
     CartItemResponseDto toResponseDto(CartItem cartItem);
 
     void updateCartItemFromDto(@MappingTarget CartItem cartItem,
-                               CartItemRequestWithoutBookIdDto requestItem);
+                               UpdateCartItemDto requestItem);
 
     @Named("bookById")
     default Book bookById(Long id) {
