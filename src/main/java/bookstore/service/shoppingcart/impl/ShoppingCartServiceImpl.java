@@ -29,14 +29,14 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartResponseDto getCart(Long id) {
         return shoppingCartMapper.toResponseDto(
                 shoppingCartRepository
-                        .findById(id).orElseThrow(()
+                        .findWithItemsAndBooksById(id).orElseThrow(()
                                 -> new EntityNotFoundException("Could not find ShoppingCart "
-                                + "by id: " + id)));
+                                + "with id: " + id)));
     }
 
     @Override
     public ShoppingCartResponseDto addItem(Long id, CartItemRequestDto itemRequest) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findById(id)
+        ShoppingCart shoppingCart = shoppingCartRepository.findWithItemsAndBooksById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find ShoppingCart "
                         + "with id: " + id));
         CartItem cartItem = cartItemMapper.toModel(itemRequest);
@@ -50,9 +50,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartResponseDto updateItem(Long userId,
                                           Long itemId,
                                           UpdateCartItemDto itemRequest) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findById(userId)
+        ShoppingCart shoppingCart = shoppingCartRepository.findWithItemsAndBooksById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find ShoppingCart "
                 + "by id: " + userId));
+
         CartItem cartItem = shoppingCart.getCartItems().stream()
                 .filter(item -> item.getId().equals(itemId))
                 .findFirst().orElseThrow(()
