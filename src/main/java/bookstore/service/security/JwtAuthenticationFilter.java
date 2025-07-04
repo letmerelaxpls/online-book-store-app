@@ -1,5 +1,6 @@
 package bookstore.service.security;
 
+import bookstore.model.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = jwtUtil.getUsername(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    userDetails.getUsername(), null, userDetails.getAuthorities());
+                    ((User) userDetails).getId(), null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
