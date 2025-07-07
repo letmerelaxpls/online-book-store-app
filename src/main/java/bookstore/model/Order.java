@@ -43,9 +43,9 @@ public class Order {
     @Column(nullable = false)
     private BigDecimal total = BigDecimal.ZERO;
     @CreationTimestamp
-    @Column(name = "order_date", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime orderDate;
-    @Column(name = "shipping_address", nullable = false)
+    @Column(nullable = false)
     private String shippingAddress;
     @OneToMany(mappedBy = "order",
             cascade = CascadeType.ALL,
