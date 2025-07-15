@@ -1,6 +1,9 @@
 package bookstore.controller;
 
+import static bookstore.util.TestUtil.createBookDtoWithTitleThat;
+import static bookstore.util.TestUtil.createBookWithTitleThat;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,9 +15,6 @@ import bookstore.dto.book.BookDto;
 import bookstore.dto.book.CreateBookRequestDto;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
-import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,14 +29,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = {"classpath:database/books/create-books-table.sql",
-        "classpath:database/categories/create-categories-table.sql",
-        "classpath:database/categories/insert-2-categories.sql",
-        "classpath:database/books/create-books_categories-table.sql"},
+@Sql(scripts = "classpath:database/categories/insert-2-categories.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@Sql(scripts = {"classpath:database/books/drop-books_categories-table.sql",
-        "classpath:database/categories/drop-categories-table.sql",
-        "classpath:database/books/drop-books-table.sql"},
+@Sql(scripts = "classpath:database/categories/delete-2-categories.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
 class BookControllerTest {
     private MockMvc mockMvc;
@@ -55,9 +50,9 @@ class BookControllerTest {
     @WithMockUser(username = "user", roles = "USER")
     @Sql(scripts = "classpath:database/books/insert-3-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/delete-books.sql",
+    @Sql(scripts = "classpath:database/books/delete-3-books.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void getAll_3Books_True() throws Exception {
+    void getAll_ThreeBooks_True() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/books")
                         .param("page", "0")
                         .param("size", "10")
@@ -74,7 +69,8 @@ class BookControllerTest {
         assertThat(bookDtos)
                 .extracting(BookDto::getTitle)
                 .containsExactlyInAnyOrder("The Shining",
-                        "It", "The Hitchhikers Guide to the Galaxy");
+                        "It", "That", "The Hitchhikers Guide to the Galaxy",
+                        "The Devils", "American Psycho");
     }
 
     @Test
@@ -82,10 +78,10 @@ class BookControllerTest {
     @WithMockUser(username = "user", roles = "USER")
     @Sql(scripts = "classpath:database/books/insert-3-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/delete-books.sql",
+    @Sql(scripts = "classpath:database/books/delete-3-books.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void getBookById_BookWithId1_True() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get("/books/1")
+    void getBookById_BookWithIdFour_True() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(get("/books/4")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -94,7 +90,7 @@ class BookControllerTest {
                 mvcResult.getResponse()
                         .getContentAsString(),
                 BookDto.class).getTitle();
-        Assertions.assertEquals(expectedTitle, actualTitle);
+        assertEquals(expectedTitle, actualTitle);
     }
 
     @Test
@@ -102,7 +98,7 @@ class BookControllerTest {
     @WithMockUser(username = "user", roles = "USER")
     @Sql(scripts = "classpath:database/books/insert-3-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/delete-books.sql",
+    @Sql(scripts = "classpath:database/books/delete-3-books.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void searchBooks_WithAuthorStephenKing_True() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/books/search")
@@ -126,9 +122,11 @@ class BookControllerTest {
     @Test
     @DisplayName("createBook should return correct book dto")
     @WithMockUser(username = "admin", roles = "ADMIN")
-    void createBook_BookWithTitleIt_True() throws Exception {
-        String jsonRequestBody = objectMapper.writeValueAsString(createBookWithTitleIt());
-        BookDto expectedDto = createBookDtoWithTitleIt();
+    @Sql(scripts = "classpath:database/books/delete-1-book.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void createBook_BookWithTitleThat_True() throws Exception {
+        String jsonRequestBody = objectMapper.writeValueAsString(createBookWithTitleThat());
+        BookDto expectedDto = createBookDtoWithTitleThat();
         MvcResult mvcResult = mockMvc.perform(post("/books")
                         .content(jsonRequestBody)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -148,14 +146,14 @@ class BookControllerTest {
     @WithMockUser(username = "admin", roles = "ADMIN")
     @Sql(scripts = "classpath:database/books/insert-3-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/delete-books.sql",
+    @Sql(scripts = "classpath:database/books/delete-3-books.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void updateBookById_ChangeBookToIt_True() throws Exception {
-        CreateBookRequestDto requestDto = createBookWithTitleIt();
-        BookDto expectedDto = createBookDtoWithTitleIt();
+    void updateBookById_ChangeBookToThat_True() throws Exception {
+        CreateBookRequestDto requestDto = createBookWithTitleThat();
+        BookDto expectedDto = createBookDtoWithTitleThat();
         String jsonRequestBody = objectMapper.writeValueAsString(requestDto);
 
-        MvcResult mvcResult = mockMvc.perform(put("/books/2")
+        MvcResult mvcResult = mockMvc.perform(put("/books/5")
                         .content(jsonRequestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -175,36 +173,14 @@ class BookControllerTest {
     @WithMockUser(username = "admin", roles = "ADMIN")
     @Sql(scripts = "classpath:database/books/insert-3-books.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/delete-books.sql",
+    @Sql(scripts = "classpath:database/books/delete-3-books.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void deleteBookById_BookWithId1_True() throws Exception {
-        String uri = "/books/1";
+    void deleteBookById_BookWithIdFour_True() throws Exception {
+        String uri = "/books/4";
         mockMvc.perform(delete(uri))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get(uri))
                 .andExpect(status().isNotFound());
-    }
-
-    private CreateBookRequestDto createBookWithTitleIt() {
-        CreateBookRequestDto book = new CreateBookRequestDto();
-        book.setTitle("It");
-        book.setAuthor("Stephen King");
-        book.setIsbn("9780307743658");
-        book.setPrice(BigDecimal.valueOf(19.99));
-        book.setDescription("Classic horror novel");
-        book.setCategoryIds(List.of(1L));
-        return book;
-    }
-
-    private BookDto createBookDtoWithTitleIt() {
-        BookDto book = new BookDto();
-        book.setTitle("It");
-        book.setAuthor("Stephen King");
-        book.setIsbn("9780307743658");
-        book.setPrice(BigDecimal.valueOf(19.99));
-        book.setDescription("Classic horror novel");
-        book.setCategoryIds(List.of(1L));
-        return book;
     }
 }

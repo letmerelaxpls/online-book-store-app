@@ -1,5 +1,9 @@
 package bookstore.service;
 
+import static bookstore.util.TestUtil.createHorrorCategory;
+import static bookstore.util.TestUtil.createHorrorCategoryRequestDto;
+import static bookstore.util.TestUtil.createHorrorCategoryResponseDto;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,7 +16,6 @@ import bookstore.repository.category.CategoryRepository;
 import bookstore.service.category.impl.CategoryServiceImpl;
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +40,7 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("findAll should return all categories")
-    void findAll_2Categories_True() {
+    void findAll_TwoCategories_True() {
         //given
         Category firstCategory = new Category();
         firstCategory.setId(2L);
@@ -63,12 +66,15 @@ class CategoryServiceImplTest {
 
         Page<CategoryResponseDto> result = categoryService.findAll(pageable);
         //then
-        Assertions.assertEquals(expectedPage, result);
+        assertEquals(expectedPage, result);
+        verify(categoryRepository).findAll(pageable);
+        verify(categoryMapper).toDto(firstCategory);
+        verify(categoryMapper).toDto(secondCategory);
     }
 
     @Test
     @DisplayName("getById should return Category with id 1")
-    void getById_CategoryWithId1_True() {
+    void getById_CategoryWithIdOne_True() {
         //given
         Long id = 1L;
         Category category = createHorrorCategory();
@@ -79,12 +85,14 @@ class CategoryServiceImplTest {
         when(categoryMapper.toDto(category)).thenReturn(expectedDto);
         CategoryResponseDto result = categoryService.getById(id);
         //then
-        Assertions.assertEquals(expectedDto, result);
+        assertEquals(expectedDto, result);
+        verify(categoryRepository).findById(id);
+        verify(categoryMapper).toDto(category);
     }
 
     @Test
     @DisplayName("save should return correct response dto")
-    void save_CategoryRequestDtoWithId1_True() {
+    void save_CategoryRequestDtoWithIdOne_True() {
         //given
         CategoryRequestDto categoryRequestDto = createHorrorCategoryRequestDto();
         Category category = createHorrorCategory();
@@ -95,7 +103,10 @@ class CategoryServiceImplTest {
         when(categoryMapper.toDto(category)).thenReturn(expectedDto);
         CategoryResponseDto result = categoryService.save(categoryRequestDto);
         //then
-        Assertions.assertEquals(expectedDto, result);
+        assertEquals(expectedDto, result);
+        verify(categoryMapper).toEntity(categoryRequestDto);
+        verify(categoryRepository).save(category);
+        verify(categoryMapper).toDto(category);
     }
 
     @Test
@@ -115,37 +126,21 @@ class CategoryServiceImplTest {
         when(categoryMapper.toDto(changedCategory)).thenReturn(expectedDto);
         CategoryResponseDto result = categoryService.update(1L, categoryRequestDto);
         //then
-        Assertions.assertEquals(expectedDto, result);
+        assertEquals(expectedDto, result);
+        verify(categoryRepository).findById(1L);
+        verify(categoryMapper).updateFromCategoryDto(initCategory, categoryRequestDto);
+        verify(categoryRepository).save(initCategory);
+        verify(categoryMapper).toDto(changedCategory);
     }
 
     @Test
     @DisplayName("deleteById should remove correct category")
-    void deleteById_CategoryWithId1_True() {
+    void deleteById_CategoryWithIdOne_True() {
         //given
         Long id = 1L;
         //when
         categoryService.deleteById(id);
         //then
         verify(categoryRepository).deleteById(id);
-    }
-
-    private Category createHorrorCategory() {
-        Category category = new Category();
-        category.setId(1L);
-        category.setName("Horror");
-        return category;
-    }
-
-    private CategoryResponseDto createHorrorCategoryResponseDto() {
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto();
-        categoryResponseDto.setId(1L);
-        categoryResponseDto.setName("Horror");
-        return categoryResponseDto;
-    }
-
-    private CategoryRequestDto createHorrorCategoryRequestDto() {
-        CategoryRequestDto categoryRequestDto = new CategoryRequestDto();
-        categoryRequestDto.setName("Horror");
-        return categoryRequestDto;
     }
 }

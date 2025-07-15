@@ -1,5 +1,8 @@
 package bookstore.service;
 
+import static bookstore.util.TestUtil.createListOfTwoBookDtos;
+import static bookstore.util.TestUtil.createListOfTwoBooks;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,10 +43,10 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("findAll should return all books")
-    void findAll_2Books_True() {
+    void findAll_TwoBooks_True() {
         //given
-        List<Book> books = createListOf2Books();
-        List<BookDto> bookDtos = createListOf2BookDtos();
+        List<Book> books = createListOfTwoBooks();
+        List<BookDto> bookDtos = createListOfTwoBookDtos();
         Pageable pageable = PageRequest.of(0, 10);
         Page<Book> bookPage = new PageImpl<>(books, pageable, 2);
         //when
@@ -53,12 +56,15 @@ class BookServiceImplTest {
         Page<BookDto> result = bookService.findAll(pageable);
         //then
         Page<BookDto> expectedBookPage = new PageImpl<>(bookDtos, pageable, 2);
-        Assertions.assertEquals(expectedBookPage, result);
+        assertEquals(expectedBookPage, result);
+        verify(bookRepository).findAll(pageable);
+        verify(bookMapper).toBookDto(books.get(0));
+        verify(bookMapper).toBookDto(books.get(1));
     }
 
     @Test
     @DisplayName("findById should return correct book")
-    void findById_BookWithId1_True() {
+    void findById_BookWithIdOne_True() {
         //given
         Long id = 1L;
         String title = "Title";
@@ -74,11 +80,13 @@ class BookServiceImplTest {
         BookDto result = bookService.findById(1L);
         //then
         Assertions.assertEquals(expectedBookDto, result);
+        verify(bookRepository).findById(id);
+        verify(bookMapper).toBookDto(book);
     }
 
     @Test
     @DisplayName("save should return correct book dto")
-    void save_BookRequestDtoWithId1_True() {
+    void save_BookRequestDtoWithIdOne_True() {
         //given
         CreateBookRequestDto bookRequestDto = new CreateBookRequestDto();
         bookRequestDto.setTitle("Title");
@@ -92,15 +100,18 @@ class BookServiceImplTest {
         when(bookMapper.toBookDto(book)).thenReturn(expectedBookDto);
         BookDto result = bookService.save(bookRequestDto);
         //then
-        Assertions.assertEquals(expectedBookDto, result);
+        assertEquals(expectedBookDto, result);
+        verify(bookMapper).toBook(bookRequestDto);
+        verify(bookRepository).save(book);
+        verify(bookMapper).toBookDto(book);
     }
 
     @Test
     @DisplayName("search should return correct book with specified parameters")
     void search_BookWithAuthorMe() {
         //given
-        List<Book> books = createListOf2Books();
-        List<BookDto> bookDtos = createListOf2BookDtos();
+        List<Book> books = createListOfTwoBooks();
+        List<BookDto> bookDtos = createListOfTwoBookDtos();
         BookSearchParametersDto searchParams = new BookSearchParametersDto(
                 null, new String[]{"Me"}, null
         );
@@ -117,7 +128,11 @@ class BookServiceImplTest {
         //then
         Page<BookDto> expectedBookPage = new PageImpl<>(bookDtos, pageable, 2);
         Page<BookDto> result = bookService.search(searchParams, pageable);
-        Assertions.assertEquals(expectedBookPage, result);
+        assertEquals(expectedBookPage, result);
+        verify(specificationBuilder).build(searchParams);
+        verify(bookRepository).findAll(spec, pageable);
+        verify(bookMapper).toBookDto(books.get(0));
+        verify(bookMapper).toBookDto(books.get(1));
     }
 
     @Test
@@ -144,37 +159,21 @@ class BookServiceImplTest {
         when(bookMapper.toBookDto(changedBook)).thenReturn(expectedBookDto);
         BookDto result = bookService.update(id, bookRequestDto);
         //then
-        Assertions.assertEquals(expectedBookDto, result);
+        assertEquals(expectedBookDto, result);
+        verify(bookRepository).findById(id);
+        verify(bookMapper).updateBookFromDto(book, bookRequestDto);
+        verify(bookRepository).save(book);
+        verify(bookMapper).toBookDto(changedBook);
     }
 
     @Test
     @DisplayName("delete should remove correct book")
-    void delete_BookWithId1_True() {
+    void delete_BookWithIdOne_True() {
         //given
         Long id = 1L;
         //when
         bookService.delete(id);
         //then
         verify(bookRepository).deleteById(id);
-    }
-
-    private List<Book> createListOf2Books() {
-        Book firstBook = new Book();
-        firstBook.setTitle("History");
-        firstBook.setAuthor("Me");
-        Book secondBook = new Book();
-        secondBook.setTitle("Zoo");
-        secondBook.setAuthor("Me");
-        return List.of(firstBook, secondBook);
-    }
-
-    private List<BookDto> createListOf2BookDtos() {
-        BookDto firstBookDto = new BookDto();
-        firstBookDto.setTitle("History");
-        firstBookDto.setAuthor("Me");
-        BookDto secondBookDto = new BookDto();
-        secondBookDto.setTitle("Zoo");
-        secondBookDto.setAuthor("Me");
-        return List.of(firstBookDto, secondBookDto);
     }
 }
